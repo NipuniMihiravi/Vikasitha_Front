@@ -1,0 +1,773 @@
+/*Registration Form*/
+body{
+font-family: 'Roboto', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+/*******************************************************************************/
+/*Form css*/
+
+.form-container {
+  max-width: 700px;
+  margin: 20px auto;
+  padding: 30px 25px;
+  background: linear-gradient(135deg, #dbeafe, #ede9fe);
+  border: 10px solid transparent;
+  border-image: linear-gradient(135deg, #a7c7e7, #d0e8ff) 1;
+  border-radius: 12px;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+ font-family: 'Roboto', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.form-title {
+ font-size: 27px;
+  font-weight: bold;
+  color: #005A9C;
+  margin-bottom: 55px;
+    text-transform: uppercase;
+
+}
+
+
+.member-form .form-group {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 20px;
+
+}
+
+.member-form .form-group label {
+  font-weight: 600;
+  margin-bottom: 7px;
+  color: #333;
+  font-size:17px;
+   text-transform: uppercase;
+}
+
+.member-form .form-group input {
+  padding: 10px 12px;
+  border: 5px solid #B0C4DE;
+  border-radius: 8px;
+  font-weight: 700;
+  color:#004687;
+  font-size:16px;
+   text-transform: uppercase;
+  transition: all 0.2s;
+}
+.member-form select,
+.member-form textarea {
+  padding: 10px 12px;
+    border: 5px solid #B0C4DE;
+    border-radius: 8px;
+    font-weight: 700;
+    color:#004687;
+    font-size:16px;
+     text-transform: uppercase;
+    transition: all 0.2s;
+}
+
+.member-form textarea {
+ padding: 10px 12px;
+   border: 5px solid #B0C4DE;
+   border-radius: 8px;
+   font-weight: 700;
+   color:#004687;
+   font-size:16px;
+    text-transform: uppercase;
+   transition: all 0.2s;
+}
+
+.member-form .form-group input:focus {
+  outline: none;
+  border-color: #4B9CD3;
+  box-shadow: 0 0 5px rgba(75,75,255,0.3);
+}
+
+
+.form-group input,
+.form-group select,
+.form-group .form-textarea,
+textarea {
+  padding: 10px 12px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  font-size: 1rem;
+  transition: all 0.2s;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.form-group input:focus,
+.form-group select:focus,
+.form-group .form-textarea:focus,
+textarea:focus {
+  outline: none;
+  border-color: #4B4BFF;
+  box-shadow: 0 0 5px rgba(75, 75, 255, 0.3);
+}
+
+.form-textarea {
+  resize: vertical; /* user can resize vertically */
+  min-height: 80px;
+}
+.member-details {
+  background: #ffffff;
+  border: 1px solid #e5e7eb;   /* subtle gray border */
+  border-radius: 12px;
+  padding: 1.5rem;
+  margin-top: 1.5rem;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.05); /* soft shadow */
+}
+
+.member-title {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #374151;
+  margin-bottom: 1rem;
+  border-bottom: 2px solid #e5e7eb;
+  padding-bottom: 0.5rem;
+}
+
+.member-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.info-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.info-label {
+  font-weight: 600;
+  color: #4b5563;
+  flex: 1;
+}
+
+.info-value {
+  flex: 2;
+  color: #1f2937;
+  text-align: right;
+}
+
+
+
+.bill-history {
+  margin-top: 20px;
+  padding: 20px;
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+}
+
+.bill-history-title {
+  font-size: 20px;
+  font-weight: 600;
+  margin-bottom: 15px;
+  color: #333;
+  text-align: center;
+}
+
+.bill-table {
+ width: 100%;
+   border-collapse: collapse;
+   background: #f9fafb;
+   border-radius: 10px;
+   overflow: hidden;
+}
+
+.bill-table thead {
+  background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+  color: #fff;
+}
+
+.bill-table th,
+.bill-table td {
+  padding: 12px 15px;
+    text-align: center;
+    border: 1px solid #e5e7eb;
+}
+
+.bill-table th {
+   background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+    color: white;
+    font-weight: 600;
+}
+
+.bill-table tbody tr {
+  border-bottom: 1px solid #e5e7eb;
+  transition: background 0.2s ease-in-out;
+}
+
+.bill-table tbody tr:nth-child(even) {
+  background: #f9fafb;
+}
+
+.bill-table tbody tr:hover {
+  background: #eef2ff;
+}
+
+/**************************************************************/
+/*Table*/
+
+.payment-details {
+  margin-top: 20px;
+  padding: 20px;
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+}
+
+.payment-title {
+  font-size: 27px;
+    font-weight: bold;
+    color: #005A9C;
+    margin-bottom: 25px;
+      text-transform: uppercase;
+  text-align: center;
+}
+
+.payment-table {
+  width: 100%;
+  border-collapse: collapse;
+  background: #f9fafb;
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.payment-table th,
+.payment-table td {
+  padding: 12px 15px;
+  text-align: center;
+  border: 1px solid #e5e7eb;
+}
+
+.payment-table th {
+  background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+  color: white;
+  font-weight: 600;
+}
+
+.payment-table tr:nth-child(even) {
+  background-color: #f3f4f6;
+}
+
+.bill-preview {
+  width: 650px;
+  margin: 0 auto;
+  padding: 20px;
+  background: #fff;
+  border: 1px solid #000;
+  font-family: Arial, sans-serif;
+  color: #000;
+}
+
+.bill-title {
+  text-align: center;
+  font-size: 20px;
+  font-weight: bold;
+  margin-bottom: 20px;
+}
+
+.bill-title .english {
+  font-weight: normal;
+  font-style: italic;
+}
+
+.bill-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.bill-table td {
+  padding: 8px 10px;
+  border: 1px solid #000;
+}
+
+.bill-table .sinhala-label {
+  font-weight: bold;
+  width: 40%;
+  background: #f0f0f0;
+}
+
+.bill-table .english-value {
+  width: 60%;
+}
+
+.bill-table .section-header td {
+  text-align: center;
+  font-weight: bold;
+  background: #d3d3d3;
+  font-size: 16px;
+}
+.section-header{
+font-weight: bold;
+}
+
+
+/
+
+
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0,0,0,0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.modal {
+  background: #fff;
+  padding: 25px;
+  border-radius: 10px;
+  max-width: 500px;
+  width: 100%;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+.modal-close {
+  background: transparent;
+  border: none;
+  font-size: 22px;
+  float: right;
+  cursor: pointer;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+
+
+/*Billing Container*/
+.billing-container {
+  max-width: 700px;
+  margin: 30px auto;
+  padding: 20px;
+  background: #f8fafc; /* light background */
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+}
+
+.billing-container h2 {
+  text-align: center;
+  margin-bottom: 20px;
+  color: #1e3a8a; /* dark blue */
+}
+
+.billing-search {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.billing-search input {
+  flex: 1;
+  padding: 8px;
+  border: 1px solid #cbd5e1;
+  border-radius: 6px;
+}
+
+.last-bill, .new-bill-form {
+  margin-top: 20px;
+  padding: 15px;
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+  background: #ffffff;
+}
+
+.form-group {
+  margin-bottom: 15px;
+  display: flex;
+  flex-direction: column;
+}
+
+.form-group label {
+  font-weight: 600;
+  margin-bottom: 6px;
+  color: #374151;
+}
+
+.form-group input {
+  padding: 8px;
+  border: 1px solid #cbd5e1;
+  border-radius: 6px;
+}
+
+.calculated-section {
+  margin-top: 20px;
+  padding: 12px;
+  background: #e0f2fe;
+  border-radius: 8px;
+}
+
+.btn {
+  padding: 10px 16px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  margin-top: 10px;
+  font-weight: 600;
+}
+
+.btn.primary {
+  background: #2563eb;
+  color: white;
+}
+
+.btn.secondary {
+  background: #facc15;
+  color: #1f2937;
+  margin-right: 10px;
+}
+
+.btn:hover {
+  opacity: 0.9;
+}
+
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0,0,0,0.6);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.modal-content {
+  background: #fff;
+  padding: 20px;
+  border-radius: 12px;
+  width: 500px;
+  max-width: 95%;
+}
+
+/********************************************************************************************/
+
+/*Buttons*/
+
+.form-actions1 {
+  display: flex;
+  justify-content: flex-end; /* Align button to the right */
+  margin: 15px 0;
+}
+
+.btn-third {
+  background-color: #545AA7;   /* green theme */
+  color: #fff;
+  border: none;
+  padding: 20px 25px;
+  border-radius: 6px;
+  font-size: 16px;
+  font-weight:600;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.15);
+}
+
+.btn-third:hover {
+  background-color: #218838;   /* darker green on hover */
+  transform: translateY(-2px); /* slight lift */
+  box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+}
+
+.form-actions {
+  display: flex;
+  gap: 15px; /* space between buttons */
+  margin-top: 30px;
+}
+
+/* Make buttons take half width each */
+.form-actions .btn-primary,
+.form-actions .btn-secondary {
+  flex: 1; /* Each button takes equal space */
+  padding: 10px 0; /* vertical padding */
+  border-radius: 8px;
+  font-size: 16px;
+  cursor: pointer;
+  border: none;
+  transition: all 0.2s;
+  text-transform: uppercase;
+}
+
+/* Primary button styling */
+.btn-primary {
+  background-color: #545AA7;
+  color: #fff;
+}
+
+.btn-primary:hover {
+  border: 2px solid #000;
+    color: #000;/* black border on hover */
+}
+
+/* Secondary button styling */
+.btn-secondary {
+  background-color: #E1C16E;
+  color: #333;
+}
+
+.btn-secondary:hover {
+ border: 2px solid #000;
+     color: #000;/* black border on hover */
+}
+
+
+.btn {
+  padding: 6px 12px;
+  border-radius: 6px;
+  border: none;
+  cursor: pointer;
+  font-size: 13px;
+  transition: all 0.3s ease;
+}
+
+.btn.edit {
+  background: #28a745;
+  color: white;
+  margin-right: 6px;
+}
+
+.btn.edit:hover {
+  background: #218838;
+}
+
+.btn.delete {
+  background: #dc3545;
+  color: white;
+}
+
+.btn.delete:hover {
+  background: #c82333;
+}
+
+.export-buttons {
+  display: flex;
+  gap: 10px;
+  margin: 15px 0;
+}
+
+.export-buttons button {
+  padding: 10px 16px;
+  border: none;
+  border-radius: 6px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: 0.2s;
+  font-weight: 500;
+}
+
+.export-buttons button:first-child {
+  background-color: #28a745; /* Green for Excel */
+  color: white;
+}
+
+.export-buttons button:first-child:hover {
+  background-color: #218838;
+}
+
+.export-buttons button:last-child {
+  background-color: #28a745; /* Red for PDF */
+  color: white;
+}
+
+.export-buttons button:last-child:hover {
+  background-color: #b52a37;
+}
+
+.btn-report {
+  margin-top: 10px;
+  padding: 6px 12px;
+  background: #4f46e5; /* indigo */
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: background 0.2s ease-in-out;
+  text-decoration: none;
+  display: inline-block;
+}
+
+.btn-report:hover {
+  background: #3730a3; /* darker indigo */
+}
+
+.menu-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 20px;
+}
+
+/* Card styles */
+.menu-card {
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  color: #fff;
+  padding: 20px;
+  border-radius: 12px;
+  text-align: center;
+  position: relative;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  overflow: hidden;
+}
+
+.menu-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.25);
+}
+
+/* Card icon and text */
+.menu-card svg {
+  margin-bottom: 10px;
+}
+
+.menu-text {
+  font-size: 16px;
+  font-weight: 600;
+  margin-bottom: 10px;
+}
+
+/* Card buttons container */
+.card-buttons {
+  display: grid;
+  grid-template-rows: repeat(2, auto); /* 2 rows */
+  gap: 8px;
+  opacity: 0; /* hidden by default */
+  max-height: 0;
+  transition: opacity 0.3s ease, max-height 0.3s ease;
+}
+
+/* Show buttons on hover */
+.menu-card:hover .card-buttons {
+  opacity: 1;
+  max-height: 100px; /* enough to show both rows */
+}
+
+/* Individual buttons */
+.btn-report {
+  background-color: rgba(255, 255, 255, 0.2);
+  color: #fff;
+  border: 1px solid #fff;
+  border-radius: 8px;
+  padding: 6px 10px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: background-color 0.2s ease;
+}
+
+.btn-report:hover {
+  background-color: rgba(255, 255, 255, 0.4);
+}
+
+/* Arrange buttons in 2nd row as two separate columns */
+.card-buttons > button:nth-child(1) {
+  grid-column: 1;
+}
+
+.card-buttons > button:nth-child(2) {
+  grid-column: 2;
+}
+
+/* Optional: make buttons appear inline on larger screens */
+@media (min-width: 400px) {
+  .card-buttons {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    grid-template-rows: 2;
+    gap: 8px;
+  }
+}
+/* Backend Button*/
+/* Top bar */
+.form-top-bar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.btn-back {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  background: #A4DDED;
+  color:#007bff;
+  font-size: 16px;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: background 0.2s ease;
+}
+
+.btn-back:hover {
+  background: #2774AE;
+}
+
+
+
+/*****************************************************/
+/*Filter Option*/
+.filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin: 15px 0;
+  align-items: center;
+  margin-bottom: 50px;
+}
+
+.filters input[type="text"],
+.filters input[type="date"] {
+  padding: 8px 12px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 14px;
+  min-width: 160px;
+}
+
+.filters button {
+  padding: 8px 14px;
+  background-color: #545aa7;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: all 0.2s ease;
+}
+
+.filters button:hover {
+  background-color: #3c4185;
+}
+
+/* Income Summary */
+.summary {
+  margin: 15px 0;
+  padding: 12px 16px;
+  background: #f8f9fa;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  font-weight: bold;
+  color: #333;
+}
+
+
+
+
+
+
+

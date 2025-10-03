@@ -1,0 +1,162 @@
+/* Layout */
+
+body{
+font-family: 'Roboto', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+
+.dashboard-layout {
+  display: flex;
+  min-height: 100vh;
+}
+
+/* Sidebar */
+.sidebar {
+  width: 220px;
+  background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+  color: white;
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+}
+
+.sidebar-title {
+  font-size: 1.5rem;
+  font-weight: bold;
+  margin-bottom: 2rem;
+  text-align: center;
+}
+
+.sidebar-menu {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.sidebar-menu li {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 0.75rem 1rem;
+  margin-bottom: 0.5rem;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
+
+.sidebar-menu li:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+/* Main Content */
+.dashboard-container {
+  flex: 1;
+  background: linear-gradient(135deg, #dbeafe, #ede9fe);
+  border-top: 80px solid transparent;
+  border-image: linear-gradient(135deg, #3b82f6, #8b5cf6) 1;
+  border-image-slice: 1;
+  border-left: 0;
+  border-right: 0;
+  border-bottom: 0;
+  border-radius: 12px;
+  padding: 2rem;
+}
+
+
+.dashboard-title {
+  font-size: 30px;
+  font-weight: bold;
+  color: #6b21a8;
+  margin-bottom: 1.5rem;
+   text-transform: uppercase;
+}
+
+/* Grid */
+.menu-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 1.5rem;
+}
+
+/* Card */
+.menu-card {
+  height: 160px;
+  width: 160px;
+  border-radius: 20px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  cursor: pointer;
+  transition: transform 0.3s ease;
+  margin: auto;
+}
+
+.menu-card:hover {
+  transform: scale(1.08);
+}
+
+.menu-text {
+  margin-top: 10px;
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+/* Gradient Backgrounds */
+.blue-purple {
+  background: linear-gradient(135deg, #60a5fa, #a78bfa);
+}
+/* Remove underline and style sidebar links */
+.sidebar-menu li a {
+  text-decoration: none;
+  color: inherit;  /* keep text same as parent */
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 10px;
+}
+
+.sidebar-menu li a:hover {
+  color: #3b82f6; /* blue on hover */
+  font-weight: 600;
+}
+.menu-grid a {
+  text-decoration: none;
+  color: inherit;
+}
+
+.transactions-container table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 15px;
+}
+
+.transactions-container th,
+.transactions-container td {
+  border: 1px solid #ddd;
+  padding: 8px;
+  text-align: left;
+}
+
+.transactions-container th {
+  background-color: #f2f2f2;
+}
+
+/* Color coding rows */
+.payment-row {
+  background-color: #d4edda; /* green */
+  color: #155724;
+}
+
+.bill-unpaid {
+  background-color: #f8d7da; /* red */
+  color: #721c24;
+}
+
+.bill-paid {
+  background-color: #e2e3e5; /* gray */
+  color: #6c757d;
+}
+
