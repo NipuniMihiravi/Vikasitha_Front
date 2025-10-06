@@ -80,8 +80,9 @@ font-family: 'Roboto', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 
 /* Card */
 .menu-card {
+width:100%;
   height: 160px;
-  width: 160px;
+  max-width: 160px;
   border-radius: 20px;
   box-shadow: 0 4px 12px rgba(0,0,0,0.2);
   display: flex;
@@ -99,7 +100,7 @@ font-family: 'Roboto', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
 .menu-text {
-  margin-top: 10px;
+  margin-top: 0.5px;
   font-size: 1rem;
   font-weight: 600;
 }
@@ -159,4 +160,144 @@ font-family: 'Roboto', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   background-color: #e2e3e5; /* gray */
   color: #6c757d;
 }
+
+/* ===========================
+   RESPONSIVE STYLES
+=========================== */
+
+/* Tablets */
+@media (max-width: 1024px) {
+  .sidebar {
+    width: 200px;
+  }
+
+  .dashboard-title {
+    font-size: 26px;
+  }
+
+  .menu-grid {
+    gap: 1rem;
+  }
+
+  .menu-card {
+    width: 140px;
+    height: 140px;
+  }
+}
+
+/* Mobile Phones */
+@media (max-width: 768px) {
+  .sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 100%;
+    transform: translateX(-100%);
+    z-index: 999;
+  }
+
+  .sidebar.open {
+    transform: translateX(0);
+  }
+
+  .toggle-btn {
+    display: block;
+  }
+
+  .dashboard-container {
+    padding: 1rem;
+  }
+
+  .dashboard-title {
+    font-size: 24px;
+    text-align: center;
+    margin-bottom:50px;
+  }
+
+  .menu-grid {
+  display: grid;
+     grid-template-columns: repeat(2, 1fr) !important;
+     gap: 1rem;
+     justify-items: center;
+     align-items: center;
+     width: 100%;
+     margin: 0 auto;
+  }
+
+ .menu-card {
+    width: 100%;
+    max-width: 100px;
+    height: 150px;
+  }
+
+  .menu-text {
+    font-size: 0.9rem;
+  }
+}
+
+/* Toggle Button (Mobile Only) */
+.toggle-btn {
+  display: none;
+  position: absolute;
+  top: 1rem;
+  left: 1rem;
+  background: #3b82f6;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 0.5rem 0.75rem;
+  cursor: pointer;
+  z-index: 1001;
+}
+
+.toggle-btn:hover {
+  background: #2563eb;
+}
+
+/* Mobile Sidebar */
+@media (max-width: 768px) {
+  .sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 100%;
+    transform: translateX(-100%);
+    z-index: 1000;
+    transition: transform 0.3s ease-in-out;
+  }
+
+  .sidebar.open {
+    transform: translateX(0);
+  }
+
+  .dashboard-container {
+    padding: 1rem;
+  }
+
+  .toggle-btn {
+    display: block;
+  }
+}
+
+.dashboard-content {
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 2rem;
+  background-color:red;
+  background: rgba(255, 255, 255, 0.7);
+  border-radius: 16px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+/* Make it look great on smaller screens */
+@media (max-width: 768px) {
+  .dashboard-content {
+    max-width: 95%;
+    padding: 1.5rem 1rem;
+    margin: 0 auto;
+    box-shadow: none;
+    background: transparent;
+  }
+}
+
 

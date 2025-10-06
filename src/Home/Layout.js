@@ -1,30 +1,50 @@
-import React from "react";
+import React, { useState } from "react";
 import { Outlet, Link } from "react-router-dom";
-import { UserPlus, CreditCard, FileText, BarChart2, User, Home } from "lucide-react";
+import {
+  UserPlus,
+  CreditCard,
+  FileText,
+  BarChart2,
+  User,
+  Home,
+  Menu,
+  X
+} from "lucide-react";
 import "./Admin.css";
 
 const Layout = () => {
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+
   const menuItems = [
-    { name: "Registration", icon: <UserPlus size={24} />, path: "/registration" },
-    { name: "Payment", icon: <CreditCard size={24} />, path: "/payment" },
-    { name: "Bill", icon: <FileText size={24} />, path: "/bill" },
-    { name: "Reports", icon: <BarChart2 size={24} />, path: "/reports" },
-    { name: "User Profile", icon: <User size={24} />, path: "/profile" },
+    { name: "Registration", icon: <UserPlus size={20} />, path: "/registration" },
+    { name: "Payment", icon: <CreditCard size={20} />, path: "/payment" },
+    { name: "Bill", icon: <FileText size={20} />, path: "/bill" },
+    { name: "Reports", icon: <BarChart2 size={20} />, path: "/reports" },
+    { name: "User Profile", icon: <User size={20} />, path: "/profile" },
   ];
 
   return (
     <div className="dashboard-layout">
-      {/* Sidebar stays always */}
-      <div className="sidebar">
+      {/* Toggle Button for Mobile */}
+      <button
+        className="toggle-btn"
+        onClick={() => setIsSidebarOpen(!isSidebarOpen)}
+      >
+        {isSidebarOpen ? <X size={22} /> : <Menu size={22} />}
+      </button>
+
+      {/* Sidebar */}
+      <div className={`sidebar ${isSidebarOpen ? "open" : ""}`}>
         <h2 className="sidebar-title">Vikasitha</h2>
         <ul className="sidebar-menu">
-          <li>
+          <li onClick={() => setIsSidebarOpen(false)}>
             <Link to="/">
               <Home size={20} /> Home
             </Link>
           </li>
+
           {menuItems.map((item, index) => (
-            <li key={index}>
+            <li key={index} onClick={() => setIsSidebarOpen(false)}>
               <Link to={item.path}>
                 {item.icon} {item.name}
               </Link>
@@ -33,8 +53,8 @@ const Layout = () => {
         </ul>
       </div>
 
-      {/* Dynamic Content */}
-      <div className="dashboard-container">
+      {/* Main Content */}
+      <div className="dashboard-container" onClick={() => setIsSidebarOpen(false)}>
         <Outlet />
       </div>
     </div>

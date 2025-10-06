@@ -183,7 +183,7 @@ const PaymentTable = ({ memberId }) => {
                   <td>
                    <td>
                      <button
-                       className="btn-delete"
+                       className="btn delete"
                        onClick={() => handleDelete(pmt.id)}
                      >
                        Delete

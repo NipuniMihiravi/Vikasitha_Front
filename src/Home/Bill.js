@@ -1,16 +1,19 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import axios from "axios";
-import "./AppHome.css"; // create overlay styles
-import { ArrowLeft } from "lucide-react"; // Modern back icon
-import { useNavigate } from "react-router-dom"; // For navigation
+import "./AppHome.css";
+import { ArrowLeft } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 const BillingForm = () => {
-  const [memberId, setMemberId] = useState("");
   const navigate = useNavigate();
+  const [memberId, setMemberId] = useState("");
   const [memberDetails, setMemberDetails] = useState(null);
   const [lastBill, setLastBill] = useState(null);
   const [billHistory, setBillHistory] = useState([]);
+  const [payments, setPayments] = useState([]);
   const [showSection, setShowSection] = useState("");
+  const [step, setStep] = useState(1);
+
   const [newBill, setNewBill] = useState({
     meterReadingThisMonthDate: "",
     meterReadingThisMonth: 0,
@@ -19,7 +22,6 @@ const BillingForm = () => {
     paymentDate: "",
   });
 
-  const [currentTariff, setCurrentTariff] = useState(null);
   const [calculated, setCalculated] = useState({
     meterReadingRemain: 0,
     unit: 0,
@@ -27,51 +29,55 @@ const BillingForm = () => {
     thisMonthTotal: 0,
     toBePaidTotal: 0,
   });
-  const [step, setStep] = useState(1);
 
-  // 🔹 Function to calculate days
-  function getDaysBetween(startDate, endDate) {
-    const start = new Date(startDate);
-    const end = new Date(endDate);
-    const diffTime = end - start;
-    return Math.floor(diffTime / (1000 * 60 * 60 * 24));
-  }
+  // ✅ Auto-fill current date when component loads
+  useEffect(() => {
+    const today = new Date();
+    const formatted = today.toISOString().split("T")[0];
+    setNewBill((prev) => ({ ...prev, meterReadingThisMonthDate: formatted }));
+  }, []);
 
-  // 🔹 Function to calculate units
-  function calculateUnits(newBill, lastBill) {
-    if (!newBill.meterReadingThisMonth || !lastBill)
-      return { unit: 0, remain: 0, prevRemain: 0 };
+  // 🔹 Helper: calculate days between two dates
+  const getDaysBetween = (start, end) => {
+    const d1 = new Date(start);
+    const d2 = new Date(end);
+    const diff = (d2 - d1) / (1000 * 60 * 60 * 24);
+    return Math.ceil(diff);
+  };
 
-    const currentReading = Number(newBill.meterReadingThisMonth);
-    const lastReading = Number(lastBill.meterReadingThisMonth);
+  // 🔹 Improved unit calculation based on days and remaining units
+  const calculateUnits = (newBill, lastBill) => {
+    if (!lastBill || !newBill.meterReadingThisMonth) {
+      return { unit: 0, remain: 0 };
+    }
+
+    const prevReading = Number(lastBill.meterReadingThisMonth || 0);
+    const currReading = Number(newBill.meterReadingThisMonth || 0);
     const prevRemain = Number(lastBill.meterReadingRemain || 0);
 
-    const totalUnits = currentReading - lastReading + prevRemain;
-    const lastDate = new Date(lastBill.meterReadingThisMonthDate);
-    const currentDate = new Date(newBill.meterReadingThisMonthDate);
-    const daysDiff = getDaysBetween(lastDate, currentDate);
+    const totalUnits = currReading - prevReading + prevRemain;
+    const daysDiff = getDaysBetween(
+      lastBill.meterReadingThisMonthDate,
+      newBill.meterReadingThisMonthDate
+    );
 
     let unit = 0;
     let remain = 0;
 
-    if (daysDiff === 30) {
-      unit = totalUnits;
-      remain = 0;
-    } else if (daysDiff > 30) {
-      const perDayUnits = totalUnits / daysDiff;
-      unit = perDayUnits * 30;
+    if (daysDiff < 30) {
+      unit = Math.round((totalUnits / 30) * daysDiff);
       remain = totalUnits - unit;
-    } else {
+    } else if (daysDiff === 30) {
       unit = totalUnits;
       remain = 0;
+    } else {
+      const perDayUsage = totalUnits / daysDiff;
+      unit = Math.round(perDayUsage * 30);
+      remain = Math.round(totalUnits - unit);
     }
 
-    return {
-      unit: parseFloat(unit.toFixed(2)),
-      remain: parseFloat(remain.toFixed(2)),
-      prevRemain: parseFloat(prevRemain.toFixed(2)),
-    };
-  }
+    return { unit, remain };
+  };
 
   // 🔹 Fetch Member Details
   const fetchMemberDetails = async () => {
@@ -80,8 +86,7 @@ const BillingForm = () => {
         `http://localhost:8081/api/registrations/member/${memberId}`
       );
       setMemberDetails(regRes.data);
-    } catch (error) {
-      console.error("Error fetching member:", error);
+    } catch (err) {
       alert("Member not found!");
       setMemberDetails(null);
       setLastBill(null);
@@ -104,48 +109,37 @@ const BillingForm = () => {
         setLastBill(null);
       }
     } catch {
-      console.warn("No bills found for this member.");
       setLastBill(null);
     }
 
     try {
-      const tariffRes = await axios.get(
-        `http://localhost:8081/api/tariff/current`
-      );
+      const tariffRes = await axios.get(`http://localhost:8081/api/tariff/current`);
       const fixCharge = tariffRes.data?.fixCharge ?? 0;
       setNewBill((prev) => ({ ...prev, fixCharge }));
     } catch {
-      console.warn("No tariff data found, using default 0.");
       setNewBill((prev) => ({ ...prev, fixCharge: 0 }));
     }
   };
 
-  // 🔹 Handle input change
+  // 🔹 Handle input
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setNewBill({ ...newBill, [name]: value });
+    setNewBill((prev) => ({ ...prev, [name]: value }));
   };
 
   // 🔹 Calculate Bill
   const calculateBill = async () => {
     if (!lastBill) return;
 
-    const prevRemain = Number(lastBill.meterReadingRemain || 0);
-    const monthUnit =
-      Number(newBill.meterReadingThisMonth) -
-      Number(lastBill.meterReadingThisMonth);
-
-    const totalUnits = monthUnit + prevRemain;
+    const { unit, remain } = calculateUnits(newBill, lastBill);
     let unitCharge = 0;
 
-    const { data: tariffs } = await axios.get(
-      "http://localhost:8081/api/tariff"
-    );
+    const { data: tariffs } = await axios.get(`http://localhost:8081/api/tariff`);
     const sortedTariffs = tariffs.sort((a, b) => a.minUnit - b.minUnit);
 
     for (let slab of sortedTariffs) {
-      if (totalUnits < slab.minUnit) continue;
-      let unitsInSlab = Math.min(totalUnits, slab.maxUnit) - slab.minUnit + 1;
+      if (unit < slab.minUnit) continue;
+      let unitsInSlab = Math.min(unit, slab.maxUnit) - slab.minUnit + 1;
       if (unitsInSlab > 0) {
         unitCharge += unitsInSlab * slab.unitPrice;
       }
@@ -156,21 +150,18 @@ const BillingForm = () => {
     const toBePaidTotal = thisMonthTotal + (lastBill.lastMonthBalance || 0);
 
     setCalculated({
-      monthUnit,
-      unit: totalUnits,
-      remain: calculateUnits(newBill, lastBill).remain,
+      unit,
+      remain,
       thisMonthCharge: unitCharge,
       thisMonthTotal,
       toBePaidTotal,
     });
-
-    setNewBill((prev) => ({ ...prev, fixCharge }));
   };
 
   // 🔹 Save Bill
   const handleSaveBill = async (e) => {
     e.preventDefault();
-    calculateBill();
+    await calculateBill();
 
     try {
       const payload = {
@@ -180,7 +171,7 @@ const BillingForm = () => {
         phoneNumber: memberDetails?.phoneNumber,
         meterReadingThisMonthDate: newBill.meterReadingThisMonthDate,
         meterReadingThisMonth: newBill.meterReadingThisMonth,
-        monthUnit: calculated.monthUnit,
+        monthUnit: calculated.unit,
         meterReadingRemain: calculated.remain,
         unit: calculated.unit,
         thisMonthCharge: calculated.thisMonthCharge,
@@ -195,40 +186,31 @@ const BillingForm = () => {
       alert("Bill saved successfully!");
       setLastBill(payload);
       setShowSection("");
-      setNewBill({
-        meterReadingThisMonthDate: "",
-        meterReadingThisMonth: 0,
-        fixCharge: 0,
-        fine: 0,
-        paymentDate: "",
-      });
     } catch (error) {
       console.error("Error saving bill:", error);
       alert("Failed to save bill.");
     }
   };
 
+  // 🔹 Fetch Payment
+const fetchPayments = async (memberId) => {
+  try {
+    const res = await axios.get(`http://localhost:8081/api/payments/member/${memberId}`);
+    // assuming API returns an array of payment objects
+    setPayments(Array.isArray(res.data) ? res.data : [res.data]);
+  } catch (err) {
+    console.error("Error fetching payments:", err);
+    setPayments([]);
+  }
+};
+
   // 🔹 Fetch Bill History
   const fetchBillHistory = async () => {
     try {
-      const res = await axios.get(
-        `http://localhost:8081/api/bills/member/${memberId}`
-      );
+      const res = await axios.get(`http://localhost:8081/api/bills/member/${memberId}`);
       setBillHistory(res.data);
-    } catch (error) {
-      console.error("Error fetching history:", error);
+    } catch {
       setBillHistory([]);
-    }
-  };
-
-  const [latestPayment, setLatestPayment] = useState(null);
-
-  const fetchLatestPayment = async (memberId) => {
-    try {
-      const response = await axios.get(`http://localhost:8081/api/payments/member/${memberId}`);
-      setLatestPayment(response.data);
-    } catch (error) {
-      console.error("Error fetching latest payment:", error);
     }
   };
 
@@ -308,15 +290,16 @@ const BillingForm = () => {
             Bill History
           </button>
 
-          <button
-            onClick={() => {
-              fetchLatestPayment(memberId);   // ✅ fetch latest payment
-              setShowSection("payments");
-            }}
-            className="btn-primary"
-          >
-            Payment Details
-          </button>
+         <button
+           onClick={() => {
+             fetchPayments(memberId);
+             setShowSection("payments");
+           }}
+           className="btn-primary"
+         >
+           Payment Details
+         </button>
+
         </div>
       )}
 
@@ -339,17 +322,27 @@ const BillingForm = () => {
                       required
                     />
                   </div>
-                  <div className="form-group">
-                    <label>Date of Meter Reading:</label>
-                    <input
-                      type="date"
-                      name="meterReadingThisMonthDate"
-                      value={newBill.meterReadingThisMonthDate}
-                      onChange={handleInputChange}
-                      required
-                    />
-                  </div>
+                 <div className="form-group">
+                       <label>Date of Meter Reading:</label>
+                       <input
+                         type="date"
+                         name="meterReadingThisMonthDate"
+                         value={newBill.meterReadingThisMonthDate}
+                         onChange={handleInputChange}
+                         required
+                       />
+                     </div>
                 <div className="form-actions">
+
+                 <button
+                  type="button"
+                  onClick={() => setShowSection("")} // closes the modal
+                  className="btn-secondary"
+
+                   >
+                   Close
+                  </button>
+
                   <button
                     type="button"
                     onClick={() => setStep(2)}
@@ -357,14 +350,7 @@ const BillingForm = () => {
                   >
                     Next
                   </button>
-                  <button
-                    type="button"
-                    onClick={() => setShowSection("")} // closes the modal
-                    className="btn-secondary"
 
-                  >
-                    Close
-                  </button>
                 </div>
 
                 </div>
@@ -407,15 +393,10 @@ const BillingForm = () => {
                     />
                   </div>
                   <div className="form-group">
-                    <label>Current Month Units:</label>
+                    <label>Current Month Units (Calculated):</label>
                     <input
                       type="number"
-                      value={
-                        lastBill
-                          ? Number(newBill.meterReadingThisMonth || 0) -
-                            Number(lastBill.meterReadingThisMonth || 0)
-                          : 0
-                      }
+                      value={calculateUnits(newBill, lastBill).unit}
                       readOnly
                     />
                   </div>
@@ -453,22 +434,14 @@ const BillingForm = () => {
               {step === 3 && (
                 <div>
                   <h4>Calculated Values:</h4>
-                  <div className="form-group">
-                    <label>
-                      Units (This Month + Last Month Remaining):
-                    </label>
-                    <input
-                      type="number"
-                      value={
-                        lastBill
-                          ? Number(newBill.meterReadingThisMonth || 0) -
-                            Number(lastBill.meterReadingThisMonth || 0) +
-                            Number(lastBill.meterReadingRemain || 0)
-                          : 0
-                      }
-                      readOnly
-                    />
-                  </div>
+                   <div className="form-group">
+                      <label>Units (This Month + Last Month Remaining):</label>
+                      <input
+                        type="number"
+                        value={calculateUnits(newBill, lastBill).unit}
+                        readOnly
+                      />
+                    </div>
                   <div className="form-group">
                     <label>This Month Charge:</label>
                     <input
@@ -552,16 +525,27 @@ const BillingForm = () => {
                     <td className="sinhala-label">Units Used (භාවිතා කළ ඒකක) :</td>
                     <td className="english-value">{calculated.unit}</td>
                   </tr>
-                  <tr>
-                    <td className="sinhala-label">
-                      Last Month Remaining Units (වැඩිම) :
-                    </td>
-                    <td className="english-value">{lastBill?.remain}</td>
-                  </tr>
-                  <tr>
-                    <td className="sinhala-label">වැඩිම :</td>
-                    <td className="english-value">Remaining Units: {calculated.remain}</td>
-                  </tr>
+                 <tr>
+                   <td className="sinhala-label">
+                     Last Month Remaining Units (පසුගිය මාසයේ වැඩිම) :
+                   </td>
+                   <td className="english-value">
+                     {lastBill?.remain !== undefined && lastBill?.remain !== null
+                       ? lastBill.remain
+                       : "0"}
+                   </td>
+                 </tr>
+                 <tr>
+                   <td className="sinhala-label">
+                     This Month Remaining Units (මෙම මාසයේ වැඩිම) :
+                   </td>
+                   <td className="english-value">
+                     {calculated.remain !== undefined && calculated.remain !== null
+                       ? calculated.remain
+                       : "0"}
+                   </td>
+                 </tr>
+
 
                   {/* Charges */}
                   <tr className="section-header">
@@ -698,7 +682,7 @@ const BillingForm = () => {
                 <th>Date</th>
                 <th>Meter Reading</th>
                 <th>Total</th>
-                <th>Paid Date</th>
+
               </tr>
             </thead>
             <tbody>
@@ -720,26 +704,52 @@ const BillingForm = () => {
 
       {/* Payment Details */}
   {/* Payment Details */}
-  {showSection === "payments" && latestPayment && (
+  {showSection === "payments" && (
     <div className="payment-details">
-      <h3 className="payment-title">Payment Details</h3>
+      <h3 className="payment-title">All Payments</h3>
 
       <table className="payment-table">
         <thead>
           <tr>
-            <th>Last Payment</th>
+            <th>Payment Amount (Rs.)</th>
             <th>Payment Date</th>
+
           </tr>
         </thead>
         <tbody>
-          <tr>
-            <td>Rs. {latestPayment.payment || "-"}</td>
-            <td>{latestPayment.paymentDate || "-"}</td>
-          </tr>
+          {payments.length > 0 ? (
+            [...payments]
+              .sort(
+                (a, b) => new Date(b.paymentDate) - new Date(a.paymentDate)
+              )
+              .map((p, index) => (
+                <tr key={index}>
+                  <td>{p.payment || "-"}</td>
+                  <td>{p.paymentDate || "-"}</td>
+
+                </tr>
+              ))
+          ) : (
+            <tr>
+              <td colSpan="3" style={{ textAlign: "center" }}>
+                No payments found.
+              </td>
+            </tr>
+          )}
         </tbody>
       </table>
+
+      <div className="form-actions">
+        <button
+          onClick={() => setShowSection("")}
+          className="btn-secondary"
+        >
+          Close
+        </button>
+      </div>
     </div>
   )}
+
 
 
  </div>

@@ -5,17 +5,20 @@ import "./Admin.css";
 
 const Dashboard = () => {
   const menuItems = [
-    { name: "Registration", icon: <UserPlus size={24} />, path: "/registration" },
+
+
+    { name: "Bill Generation", icon: <FileText size={24} />, path: "/bill" },
     { name: "Payment", icon: <CreditCard size={24} />, path: "/payment" },
-    { name: "Bill", icon: <FileText size={24} />, path: "/bill" },
-    { name: "Reports", icon: <BarChart2 size={24} />, path: "/reports" },
     { name: "User Profile", icon: <User size={24} />, path: "/profile" },
+    { name: "Reports", icon: <BarChart2 size={24} />, path: "/reports" },
+     { name: "Registration", icon: <UserPlus size={24} />, path: "/registration" },
+
   ];
 
   return (
-    <div className="dashboard-container">
+    <div className="dashboard-content">
       <h1 className="dashboard-title">Vikasitha Dashboard</h1>
-      <p>Welcome to your dashboard! Choose a section below.</p>
+
 
       <div className="menu-grid">
         {menuItems.map((item, index) => (

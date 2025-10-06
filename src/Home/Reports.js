@@ -56,7 +56,7 @@ const Reports = () => {
   ];
 
   return (
-    <div className="dashboard-container">
+    <div className="dashboard-content">
       <h1 className="dashboard-title">Reports</h1>
 
       <div className="menu-grid">

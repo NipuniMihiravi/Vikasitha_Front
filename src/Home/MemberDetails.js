@@ -19,7 +19,9 @@ const RegistrationDashboard = () => {
     phoneNumber: "",
     landNo: "",
     nationalId: "",
-    status: "Active", // New field
+    joinDate: "",
+    endDate: "",
+    status: "Active",
   });
 
   // Fetch registrations
@@ -66,6 +68,8 @@ const RegistrationDashboard = () => {
         phoneNumber: "",
         landNo: "",
         nationalId: "",
+        joinDate: "",
+        endDate: "",
         status: "Active",
       });
       fetchRegistrations();
@@ -96,6 +100,8 @@ const RegistrationDashboard = () => {
       phoneNumber: member.phoneNumber,
       landNo: member.landNo,
       nationalId: member.nationalId,
+      joinDate: member.joinDate,
+      endDate: member.endDate || "",
       status: member.status || "Active",
     });
     setModalOpen(true);
@@ -158,6 +164,8 @@ const RegistrationDashboard = () => {
                 <th>Phone</th>
                 <th>Land No</th>
                 <th>National ID</th>
+                <th>Join Date</th>
+                <th>End Date</th>
                 <th>Status</th>
                 <th>Actions</th>
               </tr>
@@ -171,14 +179,16 @@ const RegistrationDashboard = () => {
                   <td>{member.phoneNumber}</td>
                   <td>{member.landNo}</td>
                   <td>{member.nationalId}</td>
+                  <td>{member.joinDate}</td>
+                  <td>{member.endDate || "-"}</td>
                   <td>
                     <span className={member.status === "Active" ? "status-active" : "status-inactive"}>
                       {member.status}
                     </span>
                   </td>
                   <td>
-                    <button className="btn-edit" onClick={() => handleEdit(member)}>Edit</button>
-                    <button className="btn-delete" onClick={() => handleDelete(member.id)}>Delete</button>
+                    <button className="btn edit" onClick={() => handleEdit(member)}>Edit</button>
+                    <button className="btn delete" onClick={() => handleDelete(member.id)}>Delete</button>
                   </td>
                 </tr>
               ))}
@@ -261,6 +271,25 @@ const RegistrationDashboard = () => {
                     value={formData.nationalId}
                     onChange={handleChange}
                     required
+                  />
+                </div>
+                <div className="form-group">
+                  <label>Join Date</label>
+                  <input
+                    type="date"
+                    name="joinDate"
+                    value={formData.joinDate}
+                    onChange={handleChange}
+                    required
+                  />
+                </div>
+                <div className="form-group">
+                  <label>End Date</label>
+                  <input
+                    type="date"
+                    name="endDate"
+                    value={formData.endDate}
+                    onChange={handleChange}
                   />
                 </div>
                 <div className="form-group">
