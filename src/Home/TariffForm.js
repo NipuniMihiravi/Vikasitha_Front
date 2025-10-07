@@ -45,7 +45,7 @@ const TariffManager = () => {
         await axios.put(`https://vikasitha-back.onrender.com/api/tariff/${editingTariff.id}`, tariff);
         setEditingTariff(null);
       } else {
-        await axios.post(https://vikasitha-back.onrender.com/api/tariff", tariff);
+        await axios.post( "https://vikasitha-back.onrender.com/api/tariff", tariff);
       }
       resetForm();
       fetchTariffs();

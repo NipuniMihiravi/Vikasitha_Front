@@ -195,7 +195,7 @@ const BillingForm = () => {
   // 🔹 Fetch Payment
 const fetchPayments = async (memberId) => {
   try {
-    const res = await axios.get(`http://localhost:8081/api/payments/member/${memberId}`);
+    const res = await axios.get(`https://vikasitha-back.onrender.com/api/payments/member/${memberId}`);
     // assuming API returns an array of payment objects
     setPayments(Array.isArray(res.data) ? res.data : [res.data]);
   } catch (err) {
