@@ -34,7 +34,7 @@ const PaymentForm = () => {
     try {
       setLoading(true);
       const response = await axios.get(
-        `http://localhost:8081/api/registrations/member/${payment.memberId}`
+        `https://vikasitha-back.onrender.com/api/registrations/member/${payment.memberId}`
       );
 
       if (response.data) {
@@ -59,7 +59,7 @@ const PaymentForm = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      await axios.post("http://localhost:8081/api/payments", payment);
+      await axios.post("https://vikasitha-back.onrender.com/api/payments", payment);
       alert("Payment saved successfully!");
       setPayment({
         memberId: "",

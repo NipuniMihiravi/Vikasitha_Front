@@ -28,7 +28,7 @@ const RegistrationDashboard = () => {
   const fetchRegistrations = async () => {
     try {
       setLoading(true);
-      const res = await axios.get("http://localhost:8081/api/registrations");
+      const res = await axios.get("https://vikasitha-back.onrender.com/api/registrations");
       setRegistrations(res.data);
     } catch (err) {
       console.error("Error fetching registrations:", err);
@@ -53,11 +53,11 @@ const RegistrationDashboard = () => {
     try {
       if (editingMember) {
         await axios.put(
-          `http://localhost:8081/api/registrations/${editingMember.id}`,
+          `https://vikasitha-back.onrender.com/api/registrations/${editingMember.id}`,
           formData
         );
       } else {
-        await axios.post("http://localhost:8081/api/registrations", formData);
+        await axios.post("https://vikasitha-back.onrender.com/api/registrations", formData);
       }
       setModalOpen(false);
       setEditingMember(null);
@@ -82,7 +82,7 @@ const RegistrationDashboard = () => {
   const handleDelete = async (id) => {
     if (window.confirm("Are you sure you want to delete this member?")) {
       try {
-        await axios.delete(`http://localhost:8081/api/registrations/${id}`);
+        await axios.delete(`https://vikasitha-back.onrender.com/api/registrations/${id}`);
         fetchRegistrations();
       } catch (err) {
         console.error("Error deleting member:", err);

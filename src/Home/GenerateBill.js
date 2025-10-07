@@ -22,7 +22,7 @@ const GenerateBill = () => {
       setMemberInfo(null);
 
       const res = await axios.get(
-        `http://localhost:8081/api/transactions/member/${memberId}`
+        `https://vikasitha-back.onrender.com/api/transactions/member/${memberId}`
       );
 
       const transactions = res.data;
@@ -37,7 +37,7 @@ const GenerateBill = () => {
       );
 
        // Fetch member info from registration table
-          const memberRes = await axios.get(`http://localhost:8081/api/registrations/member/${memberId}`);
+          const memberRes = await axios.get(`https://vikasitha-back.onrender.com/api/registrations/member/${memberId}`);
           setMemberInfo(memberRes.data);
 
  // Latest transaction with description "Monthly Bill"

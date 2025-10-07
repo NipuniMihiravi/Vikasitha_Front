@@ -24,9 +24,9 @@ const PaymentTable = ({ memberId }) => {
   const fetchPayments = async () => {
     try {
       setLoading(true);
-      let url = "http://localhost:8081/api/payments";
+      let url = "https://vikasitha-back.onrender.com/api/payments";
       if (memberId) {
-        url = `http://localhost:8081/api/payments/member/${memberId}`;
+        url = `https://vikasitha-back.onrender.com/api/payments/member/${memberId}`;
       }
       const response = await axios.get(url);
       setPayments(response.data);
@@ -44,7 +44,7 @@ const PaymentTable = ({ memberId }) => {
   const handleDelete = async (id) => {
     if (!window.confirm("Are you sure you want to delete this payment?")) return;
     try {
-      await axios.delete(`http://localhost:8081/api/payments/${id}`);
+      await axios.delete(`https://vikasitha-back.onrender.com/api/payments/${id}`);
       setPayments(payments.filter((p) => p.id !== id));
       setFilteredPayments(filteredPayments.filter((p) => p.id !== id));
     } catch (error) {

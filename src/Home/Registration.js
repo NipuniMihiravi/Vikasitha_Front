@@ -31,7 +31,7 @@ const RegistrationForm = () => {
     setLoading(true);
 
     try {
-      const res = await axios.post("http://localhost:8081/api/registrations", formData);
+      const res = await axios.post("https://vikasitha-back.onrender.com/api/registrations", formData);
       console.log(res.data);
 
       setMessage("Registration successful!");

@@ -20,7 +20,7 @@ const BillingDashboard = () => {
     const fetchBills = async () => {
       try {
         setLoading(true);
-        const response = await axios.get("http://localhost:8081/api/bills");
+        const response = await axios.get("https://vikasitha-back.onrender.com/api/bills");
         setBills(response.data);
         setFilteredBills(response.data);
       } catch (error) {
@@ -42,7 +42,7 @@ const BillingDashboard = () => {
     }
     try {
       const response = await axios.get(
-        `http://localhost:8081/api/bills/member/${memberId}`
+        `https://vikasitha-back.onrender.com/api/bills/member/${memberId}`
       );
       setFilteredBills(response.data);
     } catch (error) {
@@ -75,7 +75,7 @@ const BillingDashboard = () => {
   const handleDelete = async (id) => {
     if (window.confirm("Are you sure you want to delete this bill?")) {
       try {
-        await axios.delete(`http://localhost:8081/api/bills/${id}`);
+        await axios.delete(`https://vikasitha-back.onrender.com/api/bills/${id}`);
         setBills(bills.filter((b) => b.id !== id));
         setFilteredBills(filteredBills.filter((b) => b.id !== id));
       } catch (error) {

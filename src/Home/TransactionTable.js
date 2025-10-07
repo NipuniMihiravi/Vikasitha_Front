@@ -20,12 +20,12 @@ const TransactionsTable = () => {
       setError("");
 
       // Fetch member details
-      const memberRes = await axios.get(`http://localhost:8081/api/registrations/member/${memberId}`);
+      const memberRes = await axios.get(`https://vikasitha-back.onrender.com/api/registrations/member/${memberId}`);
       setMemberDetails(memberRes.data);
 
       // Fetch bills
-      const billsRes = await axios.get(`http://localhost:8081/api/bills/member/${id}`);
-      const paymentsRes = await axios.get(`http://localhost:8081/api/payments/member/${id}`);
+      const billsRes = await axios.get(`https://vikasitha-back.onrender.com/api/bills/member/${id}`);
+      const paymentsRes = await axios.get(`https://vikasitha-back.onrender.com/api/payments/member/${id}`);
 
       const bills = billsRes.data.map((bill) => ({
         id: `bill-${bill.id}`,

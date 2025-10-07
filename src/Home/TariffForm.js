@@ -22,7 +22,7 @@ const TariffManager = () => {
 
   const fetchTariffs = async () => {
     try {
-      const res = await axios.get("http://localhost:8081/api/tariff");
+      const res = await axios.get("https://vikasitha-back.onrender.com/api/tariff");
       setTariffs(res.data);
     } catch (err) {
       console.error("Error fetching tariffs:", err);
@@ -42,10 +42,10 @@ const TariffManager = () => {
     e.preventDefault();
     try {
       if (editingTariff) {
-        await axios.put(`http://localhost:8081/api/tariff/${editingTariff.id}`, tariff);
+        await axios.put(`https://vikasitha-back.onrender.com/api/tariff/${editingTariff.id}`, tariff);
         setEditingTariff(null);
       } else {
-        await axios.post("http://localhost:8081/api/tariff", tariff);
+        await axios.post(https://vikasitha-back.onrender.com/api/tariff", tariff);
       }
       resetForm();
       fetchTariffs();

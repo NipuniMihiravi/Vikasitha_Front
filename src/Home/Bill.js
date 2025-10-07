@@ -83,7 +83,7 @@ const BillingForm = () => {
   const fetchMemberDetails = async () => {
     try {
       const regRes = await axios.get(
-        `http://localhost:8081/api/registrations/member/${memberId}`
+        `https://vikasitha-back.onrender.com/api/registrations/member/${memberId}`
       );
       setMemberDetails(regRes.data);
     } catch (err) {
@@ -95,7 +95,7 @@ const BillingForm = () => {
 
     try {
       const billRes = await axios.get(
-        `http://localhost:8081/api/bills/member/${memberId}`
+        `https://vikasitha-back.onrender.com/api/bills/member/${memberId}`
       );
       if (billRes.data?.length > 0) {
         const latest = billRes.data[billRes.data.length - 1];
@@ -113,7 +113,7 @@ const BillingForm = () => {
     }
 
     try {
-      const tariffRes = await axios.get(`http://localhost:8081/api/tariff/current`);
+      const tariffRes = await axios.get(`https://vikasitha-back.onrender.com/api/tariff/current`);
       const fixCharge = tariffRes.data?.fixCharge ?? 0;
       setNewBill((prev) => ({ ...prev, fixCharge }));
     } catch {
@@ -134,7 +134,7 @@ const BillingForm = () => {
     const { unit, remain } = calculateUnits(newBill, lastBill);
     let unitCharge = 0;
 
-    const { data: tariffs } = await axios.get(`http://localhost:8081/api/tariff`);
+    const { data: tariffs } = await axios.get(`https://vikasitha-back.onrender.com/api/tariff`);
     const sortedTariffs = tariffs.sort((a, b) => a.minUnit - b.minUnit);
 
     for (let slab of sortedTariffs) {
@@ -182,7 +182,7 @@ const BillingForm = () => {
         paymentDate: newBill.paymentDate,
       };
 
-      await axios.post("http://localhost:8081/api/bills", payload);
+      await axios.post("https://vikasitha-back.onrender.com/api/bills", payload);
       alert("Bill saved successfully!");
       setLastBill(payload);
       setShowSection("");
@@ -207,7 +207,7 @@ const fetchPayments = async (memberId) => {
   // 🔹 Fetch Bill History
   const fetchBillHistory = async () => {
     try {
-      const res = await axios.get(`http://localhost:8081/api/bills/member/${memberId}`);
+      const res = await axios.get(`https://vikasitha-back.onrender.com/api/bills/member/${memberId}`);
       setBillHistory(res.data);
     } catch {
       setBillHistory([]);
