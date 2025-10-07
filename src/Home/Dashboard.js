@@ -9,7 +9,7 @@ const Dashboard = () => {
 
     { name: "Bill Generation", icon: <FileText size={24} />, path: "/bill" },
     { name: "Payment", icon: <CreditCard size={24} />, path: "/payment" },
-    { name: "User Profile", icon: <User size={24} />, path: "/profile" },
+    { name: "User Profile", icon: <User size={24} />, path: "/reports/access" },
     { name: "Reports", icon: <BarChart2 size={24} />, path: "/reports" },
      { name: "Registration", icon: <UserPlus size={24} />, path: "/registration" },
 

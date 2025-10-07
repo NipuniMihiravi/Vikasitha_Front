@@ -13,30 +13,32 @@ import ManagePayment from "./Home/ManagePayment";
 import TransactionTable from "./Home/TransactionTable";
 import MemberDetails from "./Home/MemberDetails";
 import GenerateBill from "./Home/GenerateBill";
+import Login from "./Home/Login";
 
 function App() {
   return (
     <Router>
       <Routes>
-        {/* Layout wraps all pages with sidebar */}
-        <Route path="/" element={<Layout />}>
-          <Route index element={<Dashboard />} /> {/* Default page */}
+        {/* ✅ Login Page (no layout) */}
+        <Route path="/" element={<Login />} />
+
+        {/* ✅ All protected routes under Layout */}
+        <Route path="/main" element={<Layout />}>
+          <Route index element={<Dashboard />} /> {/* Default route */}
           <Route path="registration" element={<Registration />} />
           <Route path="bill" element={<Bill />} />
           <Route path="payment" element={<PaymentForm />} />
 
-           <Route path="/reports/billingdetails" element={<BillingTable />} />
-            <Route path="/reports/managebilling" element={<ManageBilling />} />
-            <Route path="/reports/memberdetails" element={<MemberDetails />} />
-
+          {/* ✅ Reports Section */}
           <Route path="reports" element={<Reports />} />
-          <Route path="/reports/tariff" element={<TariffForm />} />
-          <Route path="/reports/payment" element={<PaymentTable />} />
-          <Route path="/reports/managepayment" element={<ManagePayment />} />
-           <Route path="/reports/access" element={<TransactionTable />} />
-
-          <Route path="/reports/member" element={<GenerateBill />} />
-
+          <Route path="reports/billingdetails" element={<BillingTable />} />
+          <Route path="reports/managebilling" element={<ManageBilling />} />
+          <Route path="reports/memberdetails" element={<MemberDetails />} />
+          <Route path="reports/tariff" element={<TariffForm />} />
+          <Route path="reports/payment" element={<PaymentTable />} />
+          <Route path="reports/managepayment" element={<ManagePayment />} />
+          <Route path="reports/access" element={<TransactionTable />} />
+          <Route path="reports/member" element={<GenerateBill />} />
         </Route>
       </Routes>
     </Router>
