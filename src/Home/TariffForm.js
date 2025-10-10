@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { ArrowLeft } from "lucide-react"; // Modern back icon
 import { useNavigate } from "react-router-dom"; // For navigation
+import "./AppHome.css";
 
 
 const TariffManager = () => {
@@ -101,17 +102,18 @@ const TariffManager = () => {
                    </button>
 
               </div>
-    <div className="tariff-container">
+    <div className="form-container">
 
      <h2 className="form-title">Tariff List</h2>
       {/* Button to open modal */}
-      <div className="form-actions1">
+
       <button className="btn-third" onClick={() => setIsModalOpen(true)}>
         + Add New Tariff
       </button>
-      </div>
+
 
       {/* Modal for Add/Edit */}
+      <div className="modal-container">
       <Modal isOpen={isModalOpen} onClose={() => { resetForm(); setIsModalOpen(false); }}>
         <h2 className="form-title">{editingTariff ? "Edit Tariff" : "Add New Tariff"}</h2>
         <form onSubmit={handleSubmit} className="member-form">
@@ -217,10 +219,11 @@ const TariffManager = () => {
           </div>
         </form>
       </Modal>
+      </div>
 
       {/* Table */}
 
-
+      <div className="table-container">
         <table className="payment-table">
           <thead>
             <tr>
@@ -257,6 +260,7 @@ const TariffManager = () => {
             )}
           </tbody>
         </table>
+        </div>
 
     </div>
      </div>

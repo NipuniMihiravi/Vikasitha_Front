@@ -183,7 +183,7 @@ const BillingDashboard = () => {
 
 
       {/* Billing Details Table (Read Only) */}
-
+<div className="table-container">
       <table className="payment-table">
         <thead>
           <tr>
@@ -214,6 +214,7 @@ const BillingDashboard = () => {
           ))}
         </tbody>
       </table>
+      </div>
     </div>
     </div>
   );

@@ -23,7 +23,7 @@ const Dashboard = () => {
       <div className="menu-grid">
         {menuItems.map((item, index) => (
           <Link key={index} to={item.path} className="menu-link">
-            <div className="menu-card blue-purple">
+            <div className="menu-card">
               {item.icon}
               <p className="menu-text">{item.name}</p>
             </div>

@@ -182,7 +182,7 @@ const TransactionsTable = () => {
       </div>
 
       <div className="billing-dashboard">
-        <h2 className="form-title">Search Transactions by Member ID</h2>
+        <h2 className="form-title">Bill Summery</h2>
 
         <form onSubmit={handleSearch} style={{ marginBottom: "15px" }}>
           <div className="filters">
@@ -244,7 +244,9 @@ const TransactionsTable = () => {
               <button onClick={exportToPDF}>Download PDF</button>
             </div>
 
-            <table className="payment-table">
+
+        <div className="table-container2">
+            <table className="payment-table2">
               <thead>
                 <tr>
                   <th>Date</th>
@@ -280,6 +282,7 @@ const TransactionsTable = () => {
                 ))}
               </tbody>
             </table>
+            </div>
           </>
         )}
       </div>

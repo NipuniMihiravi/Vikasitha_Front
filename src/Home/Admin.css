@@ -71,44 +71,9 @@ font-family: 'Roboto', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
    text-transform: uppercase;
 }
 
-/* Grid */
-.menu-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-  gap: 1.5rem;
-}
 
-/* Card */
-.menu-card {
-width:100%;
-  height: 160px;
-  max-width: 160px;
-  border-radius: 20px;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  color: white;
-  cursor: pointer;
-  transition: transform 0.3s ease;
-  margin: auto;
-}
 
-.menu-card:hover {
-  transform: scale(1.08);
-}
 
-.menu-text {
-  margin-top: 0.5px;
-  font-size: 1rem;
-  font-weight: 600;
-}
-
-/* Gradient Backgrounds */
-.blue-purple {
-  background: linear-gradient(135deg, #60a5fa, #a78bfa);
-}
 /* Remove underline and style sidebar links */
 .sidebar-menu li a {
   text-decoration: none;
@@ -145,21 +110,7 @@ width:100%;
   background-color: #f2f2f2;
 }
 
-/* Color coding rows */
-.payment-row {
-  background-color: #d4edda; /* green */
-  color: #155724;
-}
 
-.bill-unpaid {
-  background-color: #f8d7da; /* red */
-  color: #721c24;
-}
-
-.bill-paid {
-  background-color: #e2e3e5; /* gray */
-  color: #6c757d;
-}
 
 /* ===========================
    RESPONSIVE STYLES
@@ -175,14 +126,7 @@ width:100%;
     font-size: 26px;
   }
 
-  .menu-grid {
-    gap: 1rem;
-  }
 
-  .menu-card {
-    width: 140px;
-    height: 140px;
-  }
 }
 
 /* Mobile Phones */
@@ -214,33 +158,15 @@ width:100%;
     margin-bottom:50px;
   }
 
-  .menu-grid {
-  display: grid;
-     grid-template-columns: repeat(2, 1fr) !important;
-     gap: 1rem;
-     justify-items: center;
-     align-items: center;
-     width: 100%;
-     margin: 0 auto;
-  }
 
- .menu-card {
-    width: 100%;
-    max-width: 100px;
-    height: 150px;
-  }
-
-  .menu-text {
-    font-size: 0.9rem;
-  }
 }
 
 /* Toggle Button (Mobile Only) */
 .toggle-btn {
   display: none;
   position: absolute;
-  top: 1rem;
-  left: 1rem;
+  top: 2px;
+  left: 120px;
   background: #3b82f6;
   color: white;
   border: none;
@@ -250,9 +176,7 @@ width:100%;
   z-index: 1001;
 }
 
-.toggle-btn:hover {
-  background: #2563eb;
-}
+
 
 /* Mobile Sidebar */
 @media (max-width: 768px) {
@@ -299,5 +223,101 @@ width:100%;
     background: transparent;
   }
 }
+
+/************** Card styles ********************************/
+
+/* ========================
+   Grid Layout
+======================== */
+.menu-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr); /* 2 cards per row */
+  gap: 1.5rem;
+  margin-top: 20px;
+}
+
+/* ========================
+   Card Styles
+======================== */
+.menu-card {
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  color: #fff;
+  padding: 20px;
+  border-radius: 12px;
+  text-align: center;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  overflow: hidden;
+}
+
+.menu-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.25);
+}
+
+.menu-card svg {
+  margin-bottom: 10px;
+}
+
+.menu-text {
+  font-size: 16px;
+  font-weight: 600;
+  margin-bottom: 12px;
+}
+
+/* ========================
+   Buttons Container
+======================== */
+.card-buttons {
+  display: grid;
+  grid-template-columns: 1fr 1fr; /* two buttons per row */
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.btn-report {
+  background-color: rgba(255, 255, 255, 0.2);
+  color: #fff;
+  border: 1px solid #fff;
+  border-radius: 8px;
+  padding: 8px 10px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s ease, transform 0.2s ease;
+}
+
+.btn-report:hover {
+  background-color: rgba(255, 255, 255, 0.4);
+  transform: translateY(-2px);
+}
+
+/* ========================
+   Responsive Styles
+======================== */
+
+/* Mobile: stack buttons vertically & 2 cards per row */
+@media (max-width: 768px) {
+  .menu-grid {
+    grid-template-columns: repeat(2, 1fr); /* two cards per row on mobile */
+  }
+
+  .card-buttons {
+    grid-template-columns: 1fr; /* buttons stacked vertically */
+  }
+
+  .btn-report {
+    width: 100%;
+    font-size: 13px;
+    padding: 10px;
+  }
+}
+
+/* Extra small devices (<480px): 1 card per row */
+@media (max-width: 480px) {
+  .menu-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
 
 
