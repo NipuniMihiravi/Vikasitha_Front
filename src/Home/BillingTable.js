@@ -66,12 +66,19 @@ const BillingDashboard = () => {
   };
 
   // Calculate income
-  const calculateIncome = () => {
-    return filteredBills.reduce(
-      (sum, bill) => sum + (bill.thisMonthTotal || 0),
-      0
-    );
-  };
+const calculateTotals = () => {
+  return filteredBills.reduce(
+    (acc, bill) => {
+      acc.monthUnit += bill.monthUnit || 0;
+      acc.unitCharge += bill.thisMonthCharge || 0;
+      acc.fixCharge += bill.fixCharge || 0;
+      acc.total += bill.thisMonthTotal || 0;
+      acc.count += 1;
+      return acc;
+    },
+    { monthUnit: 0, unitCharge: 0, fixCharge: 0, total: 0, count: 0 }
+  );
+};
 
   // Delete bill
   const handleDelete = async (id) => {
@@ -172,7 +179,22 @@ const BillingDashboard = () => {
 
       {/* Income Summary */}
       <div className="summary">
-        <h3>Total Income: Rs. {calculateIncome().toFixed(2)}</h3>
+         {filteredBills.length > 0 ? (
+            (() => {
+              const totals = calculateTotals();
+              return (
+                <div>
+                  <h4>Total Bills: {totals.count}</h4>
+                  <h4>Total Month Units: {totals.monthUnit}</h4>
+                  <h4>Total Unit Charge: Rs. {totals.unitCharge.toFixed(2)}</h4>
+                  <h4>Total Fixed Charge: Rs. {totals.fixCharge.toFixed(2)}</h4>
+                  <h4>Total Amount: Rs. {totals.total.toFixed(2)}</h4>
+                </div>
+              );
+            })()
+          ) : (
+            <p>No bills found.</p>
+          )}
       </div>
 
       {/* Export Buttons */}

@@ -19,18 +19,29 @@ function LoginPage() {
       return;
     }
 
-    // ✅ Admin login credentials (can be replaced with API auth later)
+    // ✅ Admin login
     if (username === "admin" && password === "admin123") {
       sessionStorage.setItem("userRole", "admin");
       setMessage("✅ Login successful! Redirecting...");
       setMessageType("success");
 
-      // Redirect after short delay
       setTimeout(() => navigate("/main"), 1000);
-    } else {
-      setMessage("❌ Invalid username or password.");
-      setMessageType("error");
+      return;
     }
+
+    // ✅ User login
+    if (username === "user" && password === "user123") {
+      sessionStorage.setItem("userRole", "user");
+      setMessage("✅ Login successful! Redirecting to mobile dashboard...");
+      setMessageType("success");
+
+      setTimeout(() => navigate("mobiledash"), 1000);
+      return;
+    }
+
+    // ❌ Invalid credentials
+    setMessage("❌ Invalid username or password.");
+    setMessageType("error");
   };
 
   return (

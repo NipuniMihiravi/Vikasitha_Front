@@ -164,7 +164,7 @@ const PaymentTable = ({ memberId }) => {
           <table className="payment-table">
             <thead>
               <tr>
-                <th>Payment ID</th>
+
                 <th>Member ID</th>
                 <th>Name</th>
                 <th>Payment Date</th>
@@ -175,7 +175,7 @@ const PaymentTable = ({ memberId }) => {
             <tbody>
               {filteredPayments.map((pmt) => (
                 <tr key={pmt.id}>
-                  <td>{pmt.id}</td>
+
                   <td>{pmt.memberId}</td>
                   <td>{pmt.name}</td>
                   <td>{pmt.paymentDate}</td>

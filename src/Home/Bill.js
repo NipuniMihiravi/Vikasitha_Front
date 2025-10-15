@@ -9,6 +9,8 @@ const BillingForm = () => {
   const [memberId, setMemberId] = useState("");
   const [memberDetails, setMemberDetails] = useState(null);
   const [lastBill, setLastBill] = useState(null);
+  const [latestBalance, setLatestBalance] = useState(0);
+  const [filteredPayments, setFilteredPayments] = useState([]);
   const [billHistory, setBillHistory] = useState([]);
   const [payments, setPayments] = useState([]);
   const [showSection, setShowSection] = useState("");
@@ -45,43 +47,78 @@ const BillingForm = () => {
     return Math.ceil(diff);
   };
 
+  const billingDays = lastBill
+    ? getDaysBetween(lastBill.meterReadingThisMonthDate, newBill.meterReadingThisMonthDate)
+    : 0;
+
+
   // 🔹 Improved unit calculation based on days and remaining units
-  const calculateUnits = (newBill, lastBill) => {
-    if (!lastBill || !newBill.meterReadingThisMonth) {
-      return { unit: 0, remain: 0 };
-    }
+const calculateUnits = (newBill, lastBill) => {
+  if (!lastBill || !newBill.meterReadingThisMonth) {
+    return { unit: 0, remain: 0 };
+  }
 
-    const prevReading = Number(lastBill.meterReadingThisMonth || 0);
-    const currReading = Number(newBill.meterReadingThisMonth || 0);
-    const prevRemain = Number(lastBill.meterReadingRemain || 0);
+  const prevReading = Number(lastBill.meterReadingThisMonth || 0);
+  const currReading = Number(newBill.meterReadingThisMonth || 0);
+  const prevRemain = Number(lastBill.meterReadingRemain || 0);
 
-    const totalUnits = currReading - prevReading + prevRemain;
-    const daysDiff = getDaysBetween(
-      lastBill.meterReadingThisMonthDate,
-      newBill.meterReadingThisMonthDate
-    );
+  const totalUnits = currReading - prevReading + prevRemain;
+  const daysDiff = getDaysBetween(
+    lastBill.meterReadingThisMonthDate,
+    newBill.meterReadingThisMonthDate
+  );
 
-    let unit = 0;
-    let remain = 0;
+  let unit = totalUnits;
+  let remain = 0;
 
-    if (daysDiff < 30) {
-      unit = Math.round((totalUnits / 30) * daysDiff);
-      remain = totalUnits - unit;
-    } else if (daysDiff === 30) {
-      unit = totalUnits;
-      remain = 0;
-    } else {
-      const perDayUsage = totalUnits / daysDiff;
-      unit = Math.round(perDayUsage * 30);
-      remain = Math.round(totalUnits - unit);
-    }
+  if (daysDiff > 30) {
+    // Scale to 30-day month
+    unit = Math.round((totalUnits / daysDiff) * 30);
+    remain = totalUnits - unit;
+  }
 
-    return { unit, remain };
-  };
+  // If daysDiff ≤ 30 → use total units as-is, remain = 0
+  return { unit, remain };
+};
+
+// Helper to get only this month's units (without adding previous remaining)
+const getCurrentMonthUnits = (newBill, lastBill) => {
+  if (!lastBill || !newBill.meterReadingThisMonth) return 0;
+  const { unit } = calculateUnits(newBill, lastBill);
+  return unit;
+};
+
+// Helper to get total units including last month's remaining
+const getTotalUnits = (newBill, lastBill) => {
+  if (!lastBill || !newBill.meterReadingThisMonth) return 0;
+  const { unit } = calculateUnits(newBill, lastBill);
+  return unit + (lastBill.meterReadingRemain || 0);
+};
+
+useEffect(() => {
+  if (payments.length > 0 && lastBill && newBill.meterReadingThisMonthDate) {
+    const fromDate = new Date(lastBill.meterReadingThisMonthDate);
+    const toDate = new Date(newBill.meterReadingThisMonthDate);
+
+    const filtered = payments.filter((p) => {
+      const payDate = new Date(p.paymentDate);
+      return payDate >= fromDate && payDate <= toDate;
+    });
+
+    setFilteredPayments(filtered);
+  }
+}, [payments, lastBill, newBill.meterReadingThisMonthDate]);
+
+
+
+
+
+
 
   // 🔹 Fetch Member Details
   const fetchMemberDetails = async () => {
     try {
+      // 1️⃣ Fetch member info
       const regRes = await axios.get(
         `https://vikasitha-back.onrender.com/api/registrations/member/${memberId}`
       );
@@ -90,10 +127,13 @@ const BillingForm = () => {
       alert("Member not found!");
       setMemberDetails(null);
       setLastBill(null);
+      setPayments([]);
+      setFilteredPayments([]);
       return;
     }
 
     try {
+      // 2️⃣ Fetch bills
       const billRes = await axios.get(
         `https://vikasitha-back.onrender.com/api/bills/member/${memberId}`
       );
@@ -108,18 +148,69 @@ const BillingForm = () => {
       } else {
         setLastBill(null);
       }
-    } catch {
+    } catch (err) {
+      console.error("Error fetching bills:", err);
       setLastBill(null);
     }
 
     try {
-      const tariffRes = await axios.get(`https://vikasitha-back.onrender.com/api/tariff/current`);
+      // 3️⃣ Fetch current tariff
+      const tariffRes = await axios.get(
+        `https://vikasitha-back.onrender.com/api/tariff/current`
+      );
       const fixCharge = tariffRes.data?.fixCharge ?? 0;
       setNewBill((prev) => ({ ...prev, fixCharge }));
     } catch {
       setNewBill((prev) => ({ ...prev, fixCharge: 0 }));
     }
+
+    try {
+      // 4️⃣ Fetch latest balance from transactions
+      const txnRes = await axios.get(
+        `https://vikasitha-back.onrender.com/api/transactions/member/${memberId}`
+      );
+      if (txnRes.data?.length > 0) {
+        const latestTxn = txnRes.data.sort(
+          (a, b) => new Date(b.date) - new Date(a.date)
+        )[0];
+        setLatestBalance(latestTxn.balance || 0);
+      } else {
+        setLatestBalance(0);
+      }
+    } catch (err) {
+      console.error("Error fetching transactions:", err);
+      setLatestBalance(0);
+    }
+
+    try {
+      // 5️⃣ Fetch payments and filter by current billing period
+      const paymentsRes = await axios.get(
+        `https://vikasitha-back.onrender.com/api/payments/member/${memberId}`
+      );
+      const allPayments = Array.isArray(paymentsRes.data) ? paymentsRes.data : [paymentsRes.data];
+      setPayments(allPayments);
+
+      // Filter payments for current billing period
+      const fromDate = lastBill
+        ? new Date(lastBill.meterReadingThisMonthDate)
+        : new Date("1970-01-01");
+      const toDate = new Date(newBill.meterReadingThisMonthDate);
+
+      const filtered = allPayments.filter((p) => {
+        const payDate = new Date(p.paymentDate);
+        return payDate >= fromDate && payDate <= toDate;
+      });
+      setFilteredPayments(filtered);
+    } catch (err) {
+      console.error("Error fetching payments:", err);
+      setPayments([]);
+      setFilteredPayments([]);
+    }
   };
+
+
+
+
 
   // 🔹 Handle input
   const handleInputChange = (e) => {
@@ -147,7 +238,8 @@ const BillingForm = () => {
 
     const fixCharge = Number(newBill.fixCharge) || 0;
     const thisMonthTotal = unitCharge + fixCharge;
-    const toBePaidTotal = thisMonthTotal + (lastBill.lastMonthBalance || 0);
+    const toBePaidTotal = thisMonthTotal + (latestBalance || 0);
+
 
     setCalculated({
       unit,
@@ -185,12 +277,15 @@ const BillingForm = () => {
       await axios.post("https://vikasitha-back.onrender.com/api/bills", payload);
       alert("Bill saved successfully!");
       setLastBill(payload);
-      setShowSection("");
-    } catch (error) {
-      console.error("Error saving bill:", error);
-      alert("Failed to save bill.");
-    }
-  };
+     setShowSection("");
+
+         // ✅ Navigate back to main page after saving
+         navigate("/main"); // Replace "/" with your main page route
+       } catch (error) {
+         console.error("Error saving bill:", error);
+         alert("Failed to save bill.");
+       }
+     };
 
   // 🔹 Fetch Payment
 const fetchPayments = async (memberId) => {
@@ -384,6 +479,16 @@ const fetchPayments = async (memberId) => {
                       readOnly
                     />
                   </div>
+
+                  <div className="form-group">
+                    <label>Billing Period (days):</label>
+                    <input
+                      type="number"
+                      value={lastBill ? getDaysBetween(lastBill.meterReadingThisMonthDate, newBill.meterReadingThisMonthDate) : 0}
+                      readOnly
+                    />
+                  </div>
+
                   <div className="form-group">
                     <label>Previous Remaining Units:</label>
                     <input
@@ -396,7 +501,7 @@ const fetchPayments = async (memberId) => {
                     <label>Current Month Units (Calculated):</label>
                     <input
                       type="number"
-                      value={calculateUnits(newBill, lastBill).unit}
+                      value={getCurrentMonthUnits(newBill, lastBill)}
                       readOnly
                     />
                   </div>
@@ -434,14 +539,15 @@ const fetchPayments = async (memberId) => {
               {step === 3 && (
                 <div>
                   <h4>Calculated Values:</h4>
-                   <div className="form-group">
-                      <label>Units (This Month + Last Month Remaining):</label>
-                      <input
-                        type="number"
-                        value={calculateUnits(newBill, lastBill).unit}
-                        readOnly
-                      />
-                    </div>
+                  <div className="form-group">
+                    <label>Units (This Month + Last Month Remaining):</label>
+                    <input
+                      type="number"
+                      value={getTotalUnits(newBill, lastBill)}
+                      readOnly
+                    />
+                  </div>
+
                   <div className="form-group">
                     <label>This Month Charge:</label>
                     <input
@@ -480,192 +586,162 @@ const fetchPayments = async (memberId) => {
 
 
        {step === 4 && (
-         <div id="bill-print" className="bill-preview">
-           <h3 className="bill-title">විකසිත ප්‍රජා මූල සංවිධානය / <span className="english">Vikasitha Praja Muula Sanvidanaya</span></h3>
+       <div>
+       <div id="bill-print" className="bill-container">
+         <h3 className="bill-title">
+           විකසිත ප්‍රජා මූල සංවිධානය<br />
+           <span className="english">Vikasitha Praja Muula Sanvidanaya</span>
+         </h3>
 
-           <table className="bill-table">
-          <tbody>
-                  {/* Member Info */}
-                  <tr>
-                    <td className="sinhala-label">Member ID (සාමාජික අංකය) :</td>
-                    <td className="english-value">{memberId}</td>
-                  </tr>
-                  <tr>
-                    <td className="sinhala-label">Name (නම) :</td>
-                    <td className="english-value">{memberDetails?.name}</td>
-                  </tr>
-                  <tr>
-                    <td className="sinhala-label">Address (ලිපිනය) :</td>
-                    <td className="english-value">{memberDetails?.address}</td>
-                  </tr>
-                  <tr>
-                    <td className="sinhala-label">Date (දිනය) :</td>
-                    <td className="english-value">{newBill.meterReadingThisMonthDate}</td>
-                  </tr>
+         <table className="bill-table">
+           <tbody>
+             {/* --- Member Info --- */}
+             <tr><th colSpan="4" className="section-title">Member Details / සාමාජික විස්තර</th></tr>
+             <tr>
+               <td className="label">Member ID</td>
+               <td>{memberId}</td>
+               <td className="label">Date</td>
+               <td>{newBill.meterReadingThisMonthDate}</td>
+             </tr>
+             <tr>
+               <td className="label">Name</td>
+               <td colSpan="3">{memberDetails?.name}</td>
+             </tr>
+             <tr>
+               <td className="label">Address</td>
+               <td colSpan="3">{memberDetails?.address}</td>
+             </tr>
 
-                  {/* Meter Details */}
-                  <tr className="section-header">
-                    <td colSpan="2">
-                      මාපක විස්තර / <span className="english">Meter Details</span>
-                    </td>
-                  </tr>
-                  <tr>
-                    <td className="sinhala-label">
-                      Last Reading (අවසන් මස මාපක කියවීම) :
-                    </td>
-                    <td className="english-value">{lastBill?.meterReadingThisMonth}</td>
-                  </tr>
-                  <tr>
-                    <td className="sinhala-label">
-                      Current Reading (වත්මන් මාසයේ කියවීම) :
-                    </td>
-                    <td className="english-value">{newBill.meterReadingThisMonth}</td>
-                  </tr>
-                  <tr>
-                    <td className="sinhala-label">Units Used (භාවිතා කළ ඒකක) :</td>
-                    <td className="english-value">{calculated.unit}</td>
-                  </tr>
-                 <tr>
-                   <td className="sinhala-label">
-                     Last Month Remaining Units (පසුගිය මාසයේ වැඩිම) :
-                   </td>
-                   <td className="english-value">
-                     {lastBill?.remain !== undefined && lastBill?.remain !== null
-                       ? lastBill.remain
-                       : "0"}
-                   </td>
+             {/* --- Meter Details --- */}
+             <tr><th colSpan="4" className="section-title">Meter Details / මාපක විස්තර</th></tr>
+             <tr>
+
+               <td className="label">පසුගිය කියවීම</td>
+               <td>{lastBill?.meterReadingThisMonth}</td>
+               <td className="label">වත්මන් කියවීම</td>
+               <td>{newBill.meterReadingThisMonth}</td>
+             </tr>
+             <tr>
+             <td className="label">බිල්පත් කාලය (දින)</td>
+                            <td>{lastBill ? getDaysBetween(lastBill.meterReadingThisMonthDate, newBill.meterReadingThisMonthDate) : 0}</td>
+             </tr>
+              <tr><th colSpan="4" className="section-title">Unit Details / ඒකක විස්තර</th></tr>
+             <tr>
+               <td className="label">පසුගිය මාසයේ ඉතිරි(1)</td>
+               <td>{lastBill?.meterReadingRemain || 0}</td>
+               <td className="label">මෙම මස භාවිතාය (2)</td>
+               <td>{calculateUnits(newBill, lastBill).unit}</td>
+             </tr>
+             <tr>
+               <td className="label">මුළු ඒකක (1+2)</td>
+               <td>
+                 {(calculateUnits(newBill, lastBill).unit) + (lastBill?.meterReadingRemain || 0)}
+               </td>
+               <td className="label">මෙම මාසයේ ඉතිරි</td>
+               <td>
+                 {calculated.remain ?? 0}
+               </td>
+             </tr>
+
+             {/* --- Charges --- */}
+             <tr><th colSpan="4" className="section-title">Charges / ගාස්තු</th></tr>
+             <tr>
+               <td className="label">ස්ථිර ගාස්තුව (3)</td>
+               <td>Rs. {newBill.fixCharge}</td>
+               <td className="label">මෙම මාසයේ භාවිතා ගාස්තුව (4)</td>
+               <td>Rs. {calculated.thisMonthCharge.toFixed(2)}</td>
+             </tr>
+             <tr>
+               <td className="label">මෙම මාසයේ එකතුව (3+4)</td>
+               <td>Rs. {calculated.thisMonthTotal.toFixed(2)}</td>
+                 <td className="label">පසුගිය මාසයේ ශේෂ මුදල (5)</td>
+                 <td>Rs. {latestBalance.toFixed(2)}</td>
+
+             </tr>
+             <tr className="grand-total-row">
+               <td colSpan="2" className="label">ගෙවිය යුතු මුදල (3+4+5) (මුළු එකතුව)</td>
+               <td colSpan="2" className="value">Rs. {calculated.toBePaidTotal.toFixed(2)}</td>
+             </tr>
+             <tr><th colSpan="4" className="section-title">Payments During This Period / මෙම කාලය තුළ ගෙවීම්</th></tr>
+             {filteredPayments.length > 0 ? (
+               filteredPayments.map((p, index) => (
+                 <tr key={index}>
+                   <td className="label">ගෙවීම් දිනය</td>
+                   <td>{p.paymentDate}</td>
+                   <td className="label">මුදල</td>
+                   <td>Rs. {(p.payment || 0).toFixed(2)}</td>
                  </tr>
-                 <tr>
-                   <td className="sinhala-label">
-                     This Month Remaining Units (මෙම මාසයේ වැඩිම) :
-                   </td>
-                   <td className="english-value">
-                     {calculated.remain !== undefined && calculated.remain !== null
-                       ? calculated.remain
-                       : "0"}
-                   </td>
-                 </tr>
+               ))
+             ) : (
+               <tr>
+                 <td colSpan="4" style={{ textAlign: "center" }}>
+                   No payments during this period.
+                 </td>
+               </tr>
+             )}
 
 
-                  {/* Charges */}
-                  <tr className="section-header">
-                    <td colSpan="2">
-                      ගාස්තු / <span className="english">Charges</span>
-                    </td>
-                  </tr>
-                  <tr>
-                    <td className="sinhala-label">Fix Charge (ස්ථාවර ගාස්තු) :</td>
-                    <td className="english-value">Rs. {newBill.fixCharge}</td>
-                  </tr>
-                  <tr>
-                    <td className="sinhala-label">
-                      This Month Charge (මෙම මාස ගාස්තුව) :
-                    </td>
-                    <td className="english-value">
-                      Rs. {calculated.thisMonthCharge.toFixed(2)}
-                    </td>
-                  </tr>
-                  <tr>
-                    <td className="sinhala-label">
-                      This Month Total (මෙම මාස එකතුව) :
-                    </td>
-                    <td className="english-value">
-                      Rs. {calculated.thisMonthTotal.toFixed(2)}
-                    </td>
-                  </tr>
-                  <tr>
-                    <td className="sinhala-label">Balance (ඉතිරි ශේෂය) :</td>
-                    <td className="english-value">
-                      Rs. {lastBill?.lastMonthBalance || 0}
-                    </td>
-                  </tr>
-                  <tr>
-                    <td className="sinhala-label">Grand Total (මුළු එකතුව) :</td>
-                    <td className="english-value">
-                      Rs. {calculated.toBePaidTotal.toFixed(2)}
-                    </td>
-                  </tr>
-                </tbody>
-           </table>
+           </tbody>
+         </table>
 
+         <p className="footer">Thank you! / ස්තුතියි!</p>
 
-
-
-
-
-          <div className="form-actions">
-            <button
-              onClick={() => {
-                const printContent = document.getElementById("bill-print").innerHTML;
-                const newWindow = window.open("", "_blank");
-                newWindow.document.write(`
-                  <html>
-                    <head>
-                      <title>Electricity Bill</title>
-                      <style>
-                        body {
-                          font-family: Arial, sans-serif;
-                          padding: 20px;
-                        }
-                        .bill-table {
-                          width: 100%;
-                          border-collapse: collapse;
-                          margin-top: 10px;
-                          font-size: 14px;
-                        }
-                        .bill-table td {
-                          padding: 6px 10px;
-                          vertical-align: top;
-                          border-bottom: 1px solid #ddd;
-                        }
-                        .sinhala-label {
-                          font-weight: bold;
-                          width: 40%;
-                          text-align: left;
-                          white-space: nowrap;
-                        }
-                        .english-value {
-                          width: 60%;
-                          text-align: left;
-                        }
-                        .section-header td {
-                          font-weight: bold;
-                          background: #f0f0f0;
-                          padding: 8px;
-                          text-align: center;
-                          border-bottom: 2px solid #aaa;
-                          border-top: 2px solid #aaa;
-                        }
-                        .bill-title {
-                          text-align: center;
-                          margin-bottom: 10px;
-                        }
-                      </style>
-                    </head>
-                    <body>
-                      ${printContent}
-                    </body>
-                  </html>
-                `);
-                newWindow.document.close();
-                newWindow.focus();
-                newWindow.print();
-                newWindow.close();
-              }}
-              className="btn-primary"
-            >
-              Print Bill
-            </button>
-
-            <button
-              onClick={() => setShowSection("")}
-              className="btn-secondary"
-            >
-              Close
-            </button>
-          </div>
         </div>
-      )}
+
+
+             <div className="form-actions no-print">
+               <button
+                 onClick={() => {
+                   const printContent = document.getElementById("bill-print").innerHTML;
+                   const newWindow = window.open("", "_blank");
+                   newWindow.document.write(`
+                     <html>
+                       <head>
+                         <style>
+                           @media print {
+                             body {
+                               margin: 0;
+                               font-size: 11px;
+                               font-family: Arial, sans-serif;
+                             }
+                             table {
+                               border-collapse: collapse;
+                               width: 100%;
+                             }
+                             td, th {
+                               border: 1px solid #000;
+                               padding: 2px 4px;
+                             }
+                             .no-print {
+                               display: none;
+                             }
+                           }
+                         </style>
+                       </head>
+                       <body>
+                         ${printContent}
+                       </body>
+                     </html>
+                   `);
+                   newWindow.document.close();
+                   newWindow.focus();
+                   newWindow.print();
+                   newWindow.close();
+                 }}
+                 className="btn-primary"
+               >
+                 Print Bill
+               </button>
+
+               <button
+                 onClick={() => setShowSection("")}
+                 className="btn-secondary"
+               >
+                 Close
+               </button>
+             </div>
+           </div>
+         )}
             </form>
 
                 </div>

@@ -5,6 +5,7 @@ import {
   CreditCard,
   FileText,
   BarChart2,
+  Settings,
   User,
   Home,
   Menu,
@@ -24,11 +25,14 @@ const Layout = () => {
 
   // ✅ Menu items list (Logout is last)
   const menuItems = [
-    { name: "Registration", icon: <UserPlus size={20} />, path: "/main/registration" },
+
+
+    { name: "Billing", icon: <FileText size={20} />, path: "/main/bill" },
     { name: "Payment", icon: <CreditCard size={20} />, path: "/main/payment" },
-    { name: "Bill", icon: <FileText size={20} />, path: "/main/bill" },
-    { name: "Reports", icon: <BarChart2 size={20} />, path: "/main/reports" },
+    { name: "Manage", icon: <Settings size={20} />, path: "/main/manage" },
+    { name: "Report", icon: <BarChart2 size={20} />, path: "/main/Report" },
     { name: "User Profile", icon: <User size={20} />, path: "/main/reports/access" },
+    { name: "Registration", icon: <UserPlus size={20} />, path: "/main/registration" },
     { name: "Logout", icon: <LogOut size={20} />, action: handleLogout }, // ✅ Added logout here
   ];
 
