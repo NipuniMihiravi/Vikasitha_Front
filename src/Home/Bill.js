@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import ConfirmDialog from "./ConfirmDialog";
 import axios from "axios";
 import "./AppHome.css";
 import { ArrowLeft } from "lucide-react";
@@ -6,6 +7,11 @@ import { useNavigate } from "react-router-dom";
 
 const BillingForm = () => {
   const navigate = useNavigate();
+  const [showConfirm, setShowConfirm] = useState(false);
+const [showMemberSuccess, setShowMemberSuccess] = useState(false);
+const [showMemberError, setShowMemberError] = useState(false);
+const [showBillSuccess, setShowBillSuccess] = useState(false);
+const [showBillError, setShowBillError] = useState(false);
   const [memberId, setMemberId] = useState("");
   const [memberDetails, setMemberDetails] = useState(null);
   const [lastBill, setLastBill] = useState(null);
@@ -123,14 +129,18 @@ useEffect(() => {
         `https://vikasitha-back.onrender.com/api/registrations/member/${memberId}`
       );
       setMemberDetails(regRes.data);
+      setShowMemberSuccess(true);
+
     } catch (err) {
-      alert("Member not found!");
       setMemberDetails(null);
       setLastBill(null);
       setPayments([]);
       setFilteredPayments([]);
-      return;
-    }
+
+       // ✅ Show error dialog instead of alert
+      setShowMemberError(true);;
+     }
+
 
     try {
       // 2️⃣ Fetch bills
@@ -275,17 +285,16 @@ useEffect(() => {
       };
 
       await axios.post("https://vikasitha-back.onrender.com/api/bills", payload);
-      alert("Bill saved successfully!");
-      setLastBill(payload);
-     setShowSection("");
+          // ✅ Update state and show dialog
+          setLastBill(payload);
+          setShowSection("");
+          setShowBillSuccess(true);
 
-         // ✅ Navigate back to main page after saving
-         navigate("/main"); // Replace "/" with your main page route
-       } catch (error) {
-         console.error("Error saving bill:", error);
-         alert("Failed to save bill.");
-       }
-     };
+        } catch (error) {
+          console.error("Error saving bill:", error);
+          setShowBillError(true); // ✅ Show error dialog
+        }
+      };
 
   // 🔹 Fetch Payment
 const fetchPayments = async (memberId) => {
@@ -574,11 +583,21 @@ const fetchPayments = async (memberId) => {
                        </button>
                        <button
                          type="button"
-                         onClick={() => setStep(4)}   // ✅ Move to Step 4
+                          onClick={() => setShowConfirm(true)}  // 👈 Show popup
                          className="btn-primary"
                        >
                          Generate Bill
                        </button>
+                       {showConfirm && (
+                               <ConfirmDialog
+                                 message="Are you sure you want to generate this bill?"
+                                 onConfirm={() => {
+                                   setStep(4);             // ✅ Move to Step 4 only if confirmed
+                                   setShowConfirm(false);  // Close dialog
+                                 }}
+                                 onCancel={() => setShowConfirm(false)} // ❌ Cancel button closes popup
+                               />
+                             )}
                      </div>
                 </div>
               )}
@@ -829,6 +848,52 @@ const fetchPayments = async (memberId) => {
 
 
  </div>
+
+ {/* Member Success */}
+ {showMemberSuccess && (
+   <ConfirmDialog
+     title="✅ Member Found"
+     message={`Member ${memberId} details loaded successfully.`}
+     singleButton={true}
+     onConfirm={() => setShowMemberSuccess(false)}
+   />
+ )}
+
+ {/* Member Error */}
+ {showMemberError && (
+   <ConfirmDialog
+     title="⚠️ Member Not Found"
+     message="No member record found for this ID."
+     singleButton={true}
+     onConfirm={() => setShowMemberError(false)}
+   />
+ )}
+
+ {/* Bill Success */}
+ {showBillSuccess && (
+   <ConfirmDialog
+     title="✅ Success"
+     message="Bill saved successfully!"
+     singleButton={true}
+     onConfirm={() => {
+       setShowBillSuccess(false);
+       navigate("/main/bill");
+       window.location.reload();
+     }}
+   />
+ )}
+
+ {/* Bill Error */}
+ {showBillError && (
+   <ConfirmDialog
+     title="❌ Error"
+     message="Failed to save bill. Please try again."
+     singleButton={true}
+     onConfirm={() => setShowBillError(false)}
+   />
+ )}
+
+
     </div>
   );
 };

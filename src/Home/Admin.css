@@ -166,12 +166,13 @@ font-family: 'Roboto', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   display: none;
   position: absolute;
   top: 2px;
-  left: 120px;
+  left: 290px;
   background: #3b82f6;
   color: white;
   border: none;
   border-radius: 8px;
   padding: 0.5rem 0.75rem;
+  width:50px;
   cursor: pointer;
   z-index: 1001;
 }

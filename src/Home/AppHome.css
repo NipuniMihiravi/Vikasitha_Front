@@ -391,17 +391,17 @@ textarea {
 
 .bill-title {
   text-align: center;
-  font-size: 22px;
+  font-size: 25px !important;
   font-weight: bold;
   margin-bottom: 20px;
 }
 
 .bill-title .english {
   font-weight: normal;
-  font-style: italic;
   display: block;
-  font-size: 18px;
+  font-size: 22px;
   color: #333;
+  margin-bottom:15px;
 }
 
 .bill-table {
